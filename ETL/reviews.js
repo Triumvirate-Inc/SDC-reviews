@@ -13,11 +13,12 @@ mongoose.connect('mongodb://localhost:27017/SDC', {
   useNewUrlParser: true,
 });
 
+let batch = [];
 // For City collectioon
 fs.createReadStream('../SDC-legacy-data/reviews.csv')
   .pipe(csv())
-  .on('data', (data) => {
-    const newReview = new Review({
+  .on('data', async (data) => {
+    batch.push(new Review({
       product_id: data.product_id,
       rating: data.rating,
       summary: data.summary,
@@ -30,17 +31,15 @@ fs.createReadStream('../SDC-legacy-data/reviews.csv')
       helpfulness: data.helpfulness,
       photos: [],
       reported: data.reported,
-    });
-
-    newReview.save((err, item) => {
-      if (item) {
-        // console.log('saved');
-      }
-      if (err) {
-        console.log('Error');
-      }
-    });
+    }));
+    if (batch.length === 100000) {
+      Review.insertMany(batch)
+      batch = [];
+    }
   })
   .on('end', () => {
-    console.log('Done');
+    Review.insertMany(batch)
+      .then(() => {
+        console.log('Done');
+      });
   });
