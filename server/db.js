@@ -42,9 +42,20 @@ module.exports = {
     res.status(200).send(meta);
   },
   markHelpful: async(req, res) => {
-
+    const review = await Review.findOne({reviewId: Number(req.params.review_id)})
+    review.helpfulness += 1;
+    review.save();
+    res.status(200).send(review);
+    // res.sendStatus(204);
   },
-  reportReview: async(req) => {
+  reportReview: async(req, res) => {
+    const review = await Review.findOne({reviewId: Number(req.params.review_id)})
+    review.reported = true;
+    review.save();
+    res.status(200).send(review);
+    // res.sendStatus(204);
+  },
+  addReview: async(req, res) => {
 
   }
 }

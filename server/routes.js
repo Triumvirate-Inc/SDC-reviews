@@ -4,6 +4,10 @@ const db = require('./db.js');
 
 router.get('/reviews/meta*', db.getProductMeta);
 router.get('/reviews*', db.getReviews);
+router.put('/reviews/:review_id/helpful', db.markHelpful);
+router.put('/reviews/:review_id/report', db.reportReview);
+
+
 // router.get('/reviews/*', requests.getInfo);
 // router.get('/qa/*', requests.getInfo);
 // router.get('/cart', requests.getInfo);
