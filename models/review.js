@@ -19,24 +19,25 @@ const reviewSchema = new mongoose.Schema({
   characteristics: Object // embed because < 200 entries
 });
 
-// const productSchema = new mongoose.Schema({
-//   // _id is built into mongoose
-//   ratings: {
-//     1: Number,
-//     2: Number,
-//     3: Number,
-//     4: Number,
-//     5: Number,
-//   },
-//   recommended: {
-//     true: Number,
-//     false: Number,
-//   },
-//   //adjust schema per product to include only relevant characteristics
-//   characteristics: Object // Going to be one-to-few. No need to avoid duplication, favor leaner schema.
-// });
+const productSchema = new mongoose.Schema({
+  // _id is built into mongoose
+  product_id: Number,
+  // ratings: {
+  //   1: Number,
+  //   2: Number,
+  //   3: Number,
+  //   4: Number,
+  //   5: Number,
+  // },
+  // recommended: {
+  //   true: Number,
+  //   false: Number,
+  // },
+  //adjust schema per product to include only relevant characteristics
+  productCharacteristics: Object // {id: {name: string, value: null}}
+});
 
 const Review = mongoose.model('Review', reviewSchema);
-// const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema);
 
-module.exports = { Review };
+module.exports = { Review, Product };
