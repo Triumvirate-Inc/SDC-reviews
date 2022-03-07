@@ -9,9 +9,44 @@ const db = mongoose.connect('mongodb://localhost:27017/SDC-copy', {
 
 module.exports = {
   getReviews: async(req, res) => {
-    console.log(req);
-    const reviews = await Review.find({product_id: req.query.product_id});
-    res.status(200).send(reviews);
+    const { product_id, sort, page = 1, count = 5 } = req.query;
+    // three possible sorts 'helpful', 'relevant', 'newest'
+    let order;
+    switch (sort) {
+      case 'helpful':
+        order = { helpfulness: -1 };
+        break;
+      case 'newest':
+        order = { date: -1 };
+        break;
+      default:
+       order = { helpfulness: -1, date: -1 };
+    }
+    const reviews = await Review.find({ product_id: product_id, reported: false }).sort(order);
+    // Grab the section of reviews based on page, and count and map
+    const startIndex = (page - 1) * count;
+    const frontEndReviews = {
+      product: product_id,
+      page: page,
+      count: count,
+      results: [],
+    }
+    frontEndReviews.results = reviews.slice(startIndex, page * count).map((mongooseR) => {
+      return {
+        review_id: mongooseR._id,
+        rating: mongooseR.rating,
+        summary: mongooseR.summary,
+        recommend: mongooseR.recommend,
+        response: mongooseR.response,
+        body: mongooseR.body,
+        date: mongooseR.date,
+        reviewer_name: mongooseR.reviewer_name,
+        helpfulness: mongooseR. helpfulness,
+        photos: mongooseR.photos,
+      }
+    })
+    // res.status(200).send(reviews);
+    res.status(200).send(frontEndReviews);
   },
   getProductMeta: async(req, res) => {
     const id = req.query.product_id;
@@ -42,53 +77,73 @@ module.exports = {
     res.status(200).send(meta);
   },
   markHelpful: async(req, res) => {
-    const review = await Review.findOne({reviewId: Number(req.params.review_id)})
+    const review = await Review.findById(req.params.review_id)
     review.helpfulness += 1;
-    review.save();
-    res.status(200).send(review);
-    // res.sendStatus(204);
+    review.save()
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch((err) => {
+        res.sendStatus(500);
+      })
   },
   reportReview: async(req, res) => {
-    const review = await Review.findOne({reviewId: Number(req.params.review_id)})
+    const review = await Review.findById(req.params.review_id)
     review.reported = true;
-    review.save();
-    res.status(200).send(review);
-    // res.sendStatus(204);
+    review.save()
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch((err) => {
+        res.sendStatus(500);
+      })
   },
   addReview: async(req, res) => {
-
+    const product = await Product.findOne({product_id: req.body.product_id});
+    let reviewFields = {
+      // reviewId:
+      product_id: req.body.product_id,
+      rating: req.body.rating,
+      summary: req.body.summary,
+      recommend: req.body.recommend,
+      // response:
+      body: req.body.body,
+      // date:
+      reviewer_name: req.body.name,
+      reviewer_email: req.body.email,
+      // helpfulness:
+      photos: req.body.photos,
+      // reported:
+      characteristics: {}
+    }
+    for (char in product.productCharacteristics) {
+      reviewFields.characteristics[product.productCharacteristics[char].name] = req.body.characteristics[char];
+    }
+    const review = new Review(reviewFields);
+    review.save()
+      .then((w) => {
+        res.status(201).send(w);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      })
   }
 }
 
-//meta ex
+// add review body params ex
 // {
-//   "product_id": "40346",
-//   "ratings": {
-//       "1": "1",
-//       "3": "17",
-//       "4": "1",
-//       "5": "13"
-//   },
-//   "recommended": {
-//       "false": "8",
-//       "true": "24"
-//   },
+//   "product_id": 40344,
+//   "rating": 3,
+//   "summary": "what up",
+//   "body": "adfuheqrguegrugrenjgfjnfgjnfaff aadfsjfdkjdfasjkldfasjkladfsj",
+//   "recommend": true,
+//   "name": "Owen",
+//   "email": "notReal@notReal.com",
+//   "photos": [],
 //   "characteristics": {
-//       "Fit": {
-//           "id": 135224,
-//           "value": "2.5000000000000000"
-//       },
-//       "Length": {
-//           "id": 135225,
-//           "value": "3.1250000000000000"
-//       },
-//       "Comfort": {
-//           "id": 135226,
-//           "value": "2.8750000000000000"
-//       },
-//       "Quality": {
-//           "id": 135227,
-//           "value": "2.8750000000000000"
-//       }
+//       "135219": 1,
+//       "135220": 2,
+//       "135221": 3,
+//       "135222": 4
 //   }
 // }
