@@ -32,6 +32,12 @@ module.exports = {
       results: [],
     }
     frontEndReviews.results = reviews.slice(startIndex, page * count).map((mongooseR) => {
+      let photoCounter = 1;
+      let photos = [];
+      for (let i = 0; i < mongooseR.photos.length; i++) {
+        photos.push({ id: photoCounter, url: mongooseR.photos[i] });
+        photoCounter++;
+      }
       return {
         review_id: mongooseR._id,
         rating: mongooseR.rating,
@@ -42,7 +48,7 @@ module.exports = {
         date: mongooseR.date,
         reviewer_name: mongooseR.reviewer_name,
         helpfulness: mongooseR. helpfulness,
-        photos: mongooseR.photos,
+        photos: photos,
       }
     })
     // res.status(200).send(reviews);
@@ -147,3 +153,8 @@ module.exports = {
 //       "135222": 4
 //   }
 // }
+
+// {
+//           "id": 1,
+//           "url": "urlplaceholder/review_5_photo_number_1.jpg"
+//         }
