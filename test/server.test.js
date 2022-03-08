@@ -38,10 +38,7 @@ describe("POST /reviews", () => {
       "email": "notReal@notReal.com",
       "photos": [],
       "characteristics": {
-          "135219": 1,
-          "135220": 2,
-          "135221": 3,
-          "135222": 4
+          "134988": 5,
       }
     });
     expect(response.status).to.eql(201);
@@ -49,12 +46,34 @@ describe("POST /reviews", () => {
 });
 
 describe("PUT /reviews mark helpful", () => {
-  it("can post a review", async function() {
-    const response = await request.post('/reviews/622261356961da27eb9ca23e/helpful').send();
+  it("can mark a review helpful ", async function() {
+    const response = await request.put('/reviews/622261356961da27eb9ca23a/helpful');
     expect(response.status).to.eql(201);
   });
 });
 
-describe("PUT /reviews report review", () => {
-
-});
+// describe("PUT /reviews report review", () => {
+//   it("can report a review", async function() {
+//     // post, get, report, get
+//     const posted = await request.post('/reviews').send({
+//       "product_id": 40344,
+//       "rating": 3,
+//       "summary": "a review not long for the world",
+//       "body": "I exist to be reported fillerfillerfillerfillerfillerfillerfillerfillerfillerfillerfiller",
+//       "recommend": true,
+//       "name": "Bill",
+//       "email": "notReal@notReal.com",
+//       "photos": [],
+//       "characteristics": {
+//         "134988": 5,
+//       }
+//     });
+//     expect(posted.status).to.eql(201);
+//     const retrieved =  await request.get('/reviews').query({ product_id: 40344, sort: 'newest' });
+//     console.log(retrieved);
+//     expect(retrieved.results[0].summary).to.be("a review not long for this world");
+//     await request.put(`/reviews/${retrived.results[0].review_id}/report`).send();
+//     const findReported = await request.get('/reviews').query({ product_id: 40344, sort: 'newest' });
+//     expect(findReported.results[0].review_id).to.not.be("a review not long for this world");
+//   });
+// });

@@ -27,7 +27,7 @@ const reviewSchema = new mongoose.Schema({
     validate: v => Array.isArray(v) && v.length >= 0,
   },
   reported: { type: Boolean, default: false }, // Reported reviews don't appear in GET requests
-  characteristics: Object // embed because < 200 entries { 'Fit', 4, ...  }
+  characteristics: { type: Object, required: true } // embed because < 200 entries { 'Fit', 4, ...  }
 });
 
 const productSchema = new mongoose.Schema({
