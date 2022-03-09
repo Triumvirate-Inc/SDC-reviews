@@ -43,6 +43,21 @@ describe("POST /reviews", () => {
     });
     expect(response.status).to.eql(201);
   });
+  it("recieves a 500 for adding an invalid review", async function() {
+    const response = await request.post('/reviews').send({
+      "product_id": 40344,
+      "summary": "what up",
+      "body": "adfuheqrguegrugrenjgfjnfgjnfaff aadfsjfdkjdfasjkldfasjkladfsj",
+      "recommend": true,
+      "name": "Bill",
+      "email": "notReal@notReal.com",
+      "photos": [],
+      "characteristics": {
+          "134988": 5,
+      }
+    });
+    expect(response.status).to.eql(500);
+  });
 });
 
 describe("PUT /reviews mark helpful", () => {

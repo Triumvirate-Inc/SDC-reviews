@@ -1,0 +1,91 @@
+config:
+  target: "http://localhost:3000/SDC/api/"
+  phases:
+    - duration: 20
+      arrivalRate: 25
+      name: Warm up
+    - duration: 60
+      arrivalRate: 25
+      rampTo: 100
+      name: Ramp up load
+    - duration: 120
+      arrivalRate: 100
+      name: Sustained load
+  payload:
+    path: "keywords.csv"
+    fields:
+      - "keyword"
+
+scenarios:
+  - name: "Get reviews for product"
+    flow:
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      - get:
+          url: "/reviews/"
+          qs: {{ keyword }}
+      #     capture:
+      #       - json: "$.results[0].id"
+      #         as: "productId"
+      # - get:
+      #     url: "/product/{{ productId }}/details"
+      # - think: 5
+      # - post:
+      #     url: "/cart"
+      #     json:
+      #       productId: "{{ productId }}"

@@ -24,7 +24,6 @@ fs.createReadStream('../SDC-legacy-data/characteristics.csv')
       productCharacteristics: productChars[key]
     }))
     if (products.length >= 100000){
-      // console.log('hi');
       Product.insertMany(products);
       products = [];
     }

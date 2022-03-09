@@ -10,7 +10,6 @@ const db = mongoose.connect('mongodb://localhost:27017/SDC-copy', {
 module.exports = {
   getReviews: async(req, res) => {
     const { product_id, sort, page = 1, count = 5 } = req.query;
-    // three possible sorts 'helpful', 'relevant', 'newest'
     let order;
     switch (sort) {
       case 'helpful':
@@ -22,33 +21,28 @@ module.exports = {
       default:
        order = { helpfulness: -1, date: -1 };
     }
-    const reviews = await Review.find({ product_id: product_id, reported: false }).sort(order);
-    // Grab the section of reviews based on page, and count and map
-    const startIndex = (page - 1) * count;
+    const reviews = await Review
+      .find({ product_id: product_id, reported: false }, { _id: 1, rating: 1, summary: 1, recommend: 1, response: 1, body: 1, date: 1, reviewer_name: 1, helpfulness: 1, photos: 1 } )
+      .sort(order)
+      .limit(page * count);
     const frontEndReviews = {
       product: product_id,
       page: page,
       count: count,
-      results: [],
+      results: []
     }
-    frontEndReviews.results = reviews.slice(startIndex, page * count).map((mongooseR) => {
-      let photoCounter = 1;
-      let photos = [];
-      for (let i = 0; i < mongooseR.photos.length; i++) {
-        photos.push({ id: photoCounter, url: mongooseR.photos[i] });
-        photoCounter++;
-      }
+    frontEndReviews.results = reviews.map((mongooseR) => {
       return {
         review_id: mongooseR._id,
         rating: mongooseR.rating,
         summary: mongooseR.summary,
         recommend: mongooseR.recommend,
-        response: mongooseR.response,
+        response: mongooseR.response === 'null' ? null : mongooseR.response,
         body: mongooseR.body,
         date: mongooseR.date,
         reviewer_name: mongooseR.reviewer_name,
         helpfulness: mongooseR. helpfulness,
-        photos: photos,
+        photos: mongooseR.photos
       }
     })
     // res.status(200).send(reviews);
@@ -122,7 +116,7 @@ module.exports = {
       // reported:
       characteristics: {}
     }
-    for (char in product.productCharacteristics) {
+    for (char in product?.productCharacteristics) {
       reviewFields.characteristics[product.productCharacteristics[char].name] = req.body.characteristics[char];
     }
     const review = new Review(reviewFields);

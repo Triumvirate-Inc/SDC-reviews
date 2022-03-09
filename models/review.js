@@ -9,13 +9,14 @@ const reviewSchema = new mongoose.Schema({
     type: Number,
     min: 1,
     max: 5,
+    required: true,
   },
   summary: { type: String, default: null },
   recommend: { type: Boolean, required: true },
   response: { type: String, default: null },
   body: {
     type: String,
-    minLength: 50,
+    minLength: 10,
     maxLength: 1000,
   },
   date: { type: String, default: (new Date()).toISOString() },
@@ -23,12 +24,15 @@ const reviewSchema = new mongoose.Schema({
   reviewer_email: { type: String, required: true },
   helpfulness: { type: Number, default: 0 },
   photos: {
-    type: [String],
+    type: [Object],
     validate: v => Array.isArray(v) && v.length >= 0,
+    required: true,
   },
   reported: { type: Boolean, default: false }, // Reported reviews don't appear in GET requests
   characteristics: { type: Object, required: true } // embed because < 200 entries { 'Fit', 4, ...  }
 });
+
+reviewSchema.virtual('review_id').get(function() { return this._id; });
 
 const productSchema = new mongoose.Schema({
   // _id is built into mongoose
