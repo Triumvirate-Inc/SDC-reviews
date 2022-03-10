@@ -3,9 +3,12 @@ const Review = require('../models/review').Review;
 const Product = require('../models/review').Product;
 const axios = require('axios');
 
-const db = mongoose.connect('mongodb://localhost:27017/SDC-copy', {
+const db = mongoose.connect('mongodb://Owen:abcd@3.94.210.163:27017/SDC-copy', {
   useNewUrlParser: true,
 });
+// const db = mongoose.connect('mongodb://localhost:27017/SDC-copy', {
+//   useNewUrlParser: true,
+// });
 
 module.exports = {
   getReviews: async(req, res) => {
@@ -22,7 +25,7 @@ module.exports = {
        order = { helpfulness: -1, date: -1 };
     }
     const reviews = await Review
-      .find({ product_id: product_id, reported: false }, { _id: 1, rating: 1, summary: 1, recommend: 1, response: 1, body: 1, date: 1, reviewer_name: 1, helpfulness: 1, photos: 1 } )
+      .find({ product_id: product_id, reported: false })
       .sort(order)
       .limit(page * count);
     const frontEndReviews = {
@@ -31,7 +34,7 @@ module.exports = {
       count: count,
       results: []
     }
-    frontEndReviews.results = reviews.map((mongooseR) => {
+    frontEndReviews.results = reviews.slice((page - 1) * count, (page - 1) * count + count).map((mongooseR) => {
       return {
         review_id: mongooseR._id,
         rating: mongooseR.rating,
@@ -45,7 +48,7 @@ module.exports = {
         photos: mongooseR.photos
       }
     })
-    // res.status(200).send(reviews);
+
     res.status(200).send(frontEndReviews);
   },
   getProductMeta: async(req, res) => {
