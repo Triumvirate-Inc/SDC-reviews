@@ -9,7 +9,7 @@ const app = express();
 // app.use(express.static(path.join(__dirname, '/../build')));
 app.use(compression());
 app.use(express.json());
-app.use('/SDC/api/', routes);
+app.use('/', routes);
 
 console.log('Listening on port 3000');
 app.listen(3000);

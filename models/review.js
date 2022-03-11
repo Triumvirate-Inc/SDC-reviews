@@ -29,7 +29,10 @@ const reviewSchema = new mongoose.Schema({
     required: true,
   },
   reported: { type: Boolean, default: false }, // Reported reviews don't appear in GET requests
-  characteristics: { type: Object, required: true } // embed because < 200 entries { 'Fit', 4, ...  }
+  characteristics: {
+    type: Object,
+    validate: v => Object.keys.length > 0,
+    required: true } // embed because < 200 entries { 'Fit', 4, ...  }
 });
 
 reviewSchema.virtual('review_id').get(function() { return this._id; });

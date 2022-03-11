@@ -13,6 +13,7 @@
     "fs": "^0.0.1-security",
     "mocha": "^9.2.1",
     "mongoose": "^6.2.4",
+    "nodemon": "^2.0.15",
     "webpack": "^5.69.1"
   },
   "devDependencies": {
