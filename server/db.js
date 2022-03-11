@@ -24,32 +24,38 @@ module.exports = {
       default:
        order = { helpfulness: -1, date: -1 };
     }
-    const reviews = await Review
-      .find({ product_id: product_id, reported: false })
-      .sort(order)
-      .limit(page * count);
     const frontEndReviews = {
       product: product_id,
       page: page,
       count: count,
       results: []
     }
-    frontEndReviews.results = reviews.slice((page - 1) * count, (page - 1) * count + count).map((mongooseR) => {
-      return {
-        review_id: mongooseR._id,
-        rating: mongooseR.rating,
-        summary: mongooseR.summary,
-        recommend: mongooseR.recommend,
-        response: mongooseR.response === 'null' ? null : mongooseR.response,
-        body: mongooseR.body,
-        date: mongooseR.date,
-        reviewer_name: mongooseR.reviewer_name,
-        helpfulness: mongooseR. helpfulness,
-        photos: mongooseR.photos
-      }
-    })
-
-    res.status(200).send(frontEndReviews);
+    Review
+      .find({ product_id: product_id, reported: false })
+      .sort(order)
+      .limit(page * count)
+      .then((reviews) => {
+        frontEndReviews.results = reviews.slice((page - 1) * count, (page - 1) * count + count).map((mongooseR) => {
+          return {
+            review_id: mongooseR._id,
+            rating: mongooseR.rating,
+            summary: mongooseR.summary,
+            recommend: mongooseR.recommend,
+            response: mongooseR.response === 'null' ? null : mongooseR.response,
+            body: mongooseR.body,
+            date: mongooseR.date,
+            reviewer_name: mongooseR.reviewer_name,
+            helpfulness: mongooseR. helpfulness,
+            photos: mongooseR.photos
+          }
+        })
+      })
+      .then(() => {
+        res.status(200).send(frontEndReviews);
+      })
+      .catch((err) => {
+        res.sendStatus(500);
+      })
   },
   getProductMeta: async(req, res) => {
     const id = req.query.product_id;
@@ -76,8 +82,7 @@ module.exports = {
       })
     });
 
-    // res.status(200).send(productChars);
-    res.status(200).send(meta);
+    res.status(200).send(reviews);
   },
   markHelpful: async(req, res) => {
     const review = await Review.findById(req.params.review_id)
